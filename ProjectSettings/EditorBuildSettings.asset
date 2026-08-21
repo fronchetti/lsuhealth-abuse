@@ -6,7 +6,16 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/ChapterSelectScene.unity
+    guid: 8a055ff9d7371544584a1f9a1d87d445
+  - enabled: 1
     path: Assets/Scenes/InstructorScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/PatientScene.unity
+    guid: f994751de1a966c43b52d9874b4c97c9
+  - enabled: 1
+    path: Assets/Scenes/LearnerScores.unity
+    guid: be957efc1569f2848b888135af3784f0
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3620a0e4d1e350d43b1540007309a117, type: 3}
+  m_Name: Chapter_Alcohol
+  m_EditorClassIdentifier: Assembly-CSharp::RealtimePatient.ChapterDefinition
+  displayName: Alcohol
+  menuDescription: Screen a guarded patient for alcohol use using respectful, nonjudgmental
+    communication.
+  menuOrder: 1
+  instructorPrompt: {fileID: 4900000, guid: 3b9356ac33743f74facb865f3ef8c231, type: 3}
+  patientPrompt: {fileID: 4900000, guid: f86bab31b85708e4abc7ae7fa341e6ec, type: 3}
+  instructorVoice: marin
+  patientVoice: cedar
+  instructorTaskTitle: 'Task #1:'
+  instructorTaskBody: Meet with your instructor to learn about the upcoming patient
+    encounter, review the communication objectives, and prepare for the alcohol screening
+    exercise.
+  patientTaskTitle: 'Task #2:'
+  patientTaskBody: Speak with Wayne Boudreaux about his alcohol use, explore how
+    it may be affecting his health, and encourage reflection through respectful,
+    nonjudgmental communication.
+  debriefHeadline: You did a great job!
+  debriefBody: 'Well done! You established rapport, maintained a respectful and nonjudgmental
+    tone, and encouraged the patient to discuss his alcohol use. Continue strengthening
+    your reflective listening and exploring the patient''s readiness to change before
+    offering recommendations.
+
+
+    To improve, use more reflective statements, avoid
+    moving too quickly to advice, and explore the patient''s motivation and readiness
+    for change in greater depth.'
+  sceneSequence:
+  - InstructorScene
+  - PatientScene
+  - LearnerScores

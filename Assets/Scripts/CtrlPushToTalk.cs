@@ -256,20 +256,40 @@ namespace RealtimePatient
             byte[] pcm16 =
                 AudioPcmUtility.FloatToPcm16(pcm24k);
 
-            const int minimumCommitBytes = 2;
+            // The Realtime API rejects a commit under 100 ms.
+            // At 24 kHz mono PCM16: 0.1 * 24000 * 2 = 4800 bytes.
+            const int minimumCommitBytes = 4800;
+
+            float peak = AudioPcmUtility.PeakAmplitude(mono);
 
             Debug.Log(
                 $"Recorded frames: {recordedFrames}, " +
                 $"channels: {channels}, " +
                 $"source rate: {sourceSampleRate}, " +
+                $"peak level: {peak:F4}, " +
                 $"generated PCM16: {pcm16.Length} bytes.");
+
+            // Silence still commits, and response.create still fires,
+            // so the avatar replies to an empty turn. That looks like
+            // "it ignores me and talks to itself".
+            if (peak < 0.005f)
+            {
+                Debug.LogWarning(
+                    $"Captured audio is effectively silent " +
+                    $"(peak {peak:F4}) from microphone " +
+                    $"'{activeMicrophone}'. Check that this is the " +
+                    $"device you are speaking into.");
+            }
 
             if (pcm16.Length < minimumCommitBytes)
             {
                 Debug.LogWarning(
                     $"Recording is too short to submit. " +
-                    $"Generated: {pcm16.Length} bytes. " +
-                    $"Required: at least {minimumCommitBytes} bytes.");
+                    $"Generated: {pcm16.Length} bytes " +
+                    $"({pcm16.Length / 48f:F0} ms). " +
+                    $"The API needs at least 100 ms " +
+                    $"({minimumCommitBytes} bytes). " +
+                    $"Hold Ctrl a little longer.");
 
                 await realtimeClient.ClearInputAudioAsync();
                 return;

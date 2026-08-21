@@ -24,6 +24,14 @@ namespace RealtimePatient
         [Tooltip("For local prototypes only. Prefer the OPENAI_API_KEY environment variable.")]
         [SerializeField] private string developmentApiKey = "";
 
+        [Header("Chapter")]
+        [Tooltip("Which side of the conversation this client plays.")]
+        [SerializeField] private ChapterRole role = ChapterRole.Patient;
+
+        [Tooltip("Used when this scene is played directly, without " +
+                 "going through the chapter menu.")]
+        [SerializeField] private ChapterDefinition fallbackChapter;
+
         [Header("Avatar")]
         [TextArea(12, 30)]
         [SerializeField] private string avatarInstructions =
@@ -99,7 +107,7 @@ namespace RealtimePatient
 
             websocket.OnOpen += () =>
             {
-                StatusChanged?.Invoke("WebSocket connected; configuring patient.");
+                SetStatus("WebSocket connected; configuring patient.");
                 _ = ConfigureSessionAsync();
             };
 
@@ -114,11 +122,11 @@ namespace RealtimePatient
             websocket.OnClose += code =>
             {
                 sessionConfigured = false;
-                StatusChanged?.Invoke("WebSocket closed: " + code);
+                SetStatus("WebSocket closed: " + code);
                 Disconnected?.Invoke();
             };
 
-            StatusChanged?.Invoke("Connecting to OpenAI Realtime API...");
+            SetStatus("Connecting to OpenAI Realtime API...");
 
             try
             {
@@ -132,13 +140,33 @@ namespace RealtimePatient
 
         private async Task ConfigureSessionAsync()
         {
+            ChapterDefinition chapter = GameSession.Current;
+
+            // Unity's == handles a destroyed asset reference; ?? does not.
+            if (chapter == null)
+                chapter = fallbackChapter;
+
+            string instructions = chapter != null
+                ? chapter.GetPrompt(role)
+                : null;
+
+            if (string.IsNullOrWhiteSpace(instructions))
+                instructions = avatarInstructions;
+
+            string activeVoice = chapter != null
+                ? chapter.GetVoice(role)
+                : null;
+
+            if (string.IsNullOrWhiteSpace(activeVoice))
+                activeVoice = voice;
+
             var payload = new JObject
             {
                 ["type"] = "session.update",
                 ["session"] = new JObject
                 {
                     ["type"] = "realtime",
-                    ["instructions"] = avatarInstructions,
+                    ["instructions"] = instructions,
                     ["output_modalities"] = new JArray("audio"),
                     ["audio"] = new JObject
                     {
@@ -158,7 +186,7 @@ namespace RealtimePatient
                                 ["type"] = "audio/pcm",
                                 ["rate"] = 24000
                             },
-                            ["voice"] = voice
+                            ["voice"] = activeVoice
                         }
                     }
                 }
@@ -330,7 +358,7 @@ namespace RealtimePatient
             {
                 case "session.updated":
                     sessionConfigured = true;
-                    StatusChanged?.Invoke("Patient ready. Hold Ctrl to speak.");
+                    SetStatus("Patient ready. Hold Ctrl to speak.");
                     Connected?.Invoke();
                     break;
 
@@ -401,14 +429,25 @@ namespace RealtimePatient
                         if (commit != null)
                             commit.TrySetResult(true);
 
-                        StatusChanged?.Invoke(type);
+                        SetStatus(type);
                         break;
                     }
 
                 case "response.created":
-                    StatusChanged?.Invoke(type);
+                    SetStatus(type);
                     break;
             }
+        }
+
+        /// <summary>
+        /// Raises StatusChanged and mirrors it to the Console. The
+        /// Console copy matters because RealtimeStatusText is optional
+        /// and is not present in every scene.
+        /// </summary>
+        private void SetStatus(string message)
+        {
+            Debug.Log("[Realtime] " + message);
+            StatusChanged?.Invoke(message);
         }
 
         private void ReportError(string message)

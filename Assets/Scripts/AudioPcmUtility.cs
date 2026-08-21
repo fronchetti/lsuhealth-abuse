@@ -46,12 +46,15 @@ namespace RealtimePatient
                     nameof(sourceRate),
                     "Sample rates must be positive.");
 
+            // input.Length * destinationRate must not be evaluated as int:
+            // it overflows past 89,478 samples (1.86 s at 48 kHz), wraps
+            // negative, and the Max clamps the result to a single sample.
             int outputLength = Mathf.Max(
                 1,
-                Mathf.RoundToInt(
-                    input.Length *
+                (int)System.Math.Round(
+                    (double)input.Length *
                     destinationRate /
-                    (float)sourceRate));
+                    sourceRate));
 
             float[] output = new float[outputLength];
             float sourceStep = sourceRate / (float)destinationRate;
@@ -72,6 +75,29 @@ namespace RealtimePatient
             }
 
             return output;
+        }
+
+        /// <summary>
+        /// Loudest absolute sample in the buffer, 0 to 1. A value at or near
+        /// zero means the capture device produced no signal, which is not the
+        /// same as producing no samples.
+        /// </summary>
+        public static float PeakAmplitude(float[] samples)
+        {
+            if (samples == null || samples.Length == 0)
+                return 0f;
+
+            float peak = 0f;
+
+            for (int i = 0; i < samples.Length; i++)
+            {
+                float magnitude = Mathf.Abs(samples[i]);
+
+                if (magnitude > peak)
+                    peak = magnitude;
+            }
+
+            return peak;
         }
 
         public static byte[] FloatToPcm16(float[] samples)

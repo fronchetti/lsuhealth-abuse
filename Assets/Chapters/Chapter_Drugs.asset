@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3620a0e4d1e350d43b1540007309a117, type: 3}
+  m_Name: Chapter_Drugs
+  m_EditorClassIdentifier: Assembly-CSharp::RealtimePatient.ChapterDefinition
+  displayName: Drugs
+  menuDescription: Explore a patient's prescription opioid use without stigma, suspicion,
+    or premature advice.
+  menuOrder: 2
+  instructorPrompt: {fileID: 4900000, guid: 2b5d26bacdd9f034a9c29aac10f39d5e, type: 3}
+  patientPrompt: {fileID: 4900000, guid: af1b3dc306cf8ab438302967e82bb8b4, type: 3}
+  instructorVoice: marin
+  patientVoice: shimmer
+  instructorTaskTitle: 'Task #1:'
+  instructorTaskBody: Meet with your instructor to learn about the upcoming patient
+    encounter and review the communication objectives for discussing prescription
+    medication use.
+  patientTaskTitle: 'Task #2:'
+  patientTaskBody: Speak with Renee Landry about how she is using her pain medication.
+    Stay curious rather than accusatory, and separate concern for her from suspicion
+    of her.
+  debriefHeadline: Encounter complete
+  debriefBody: 'You completed the encounter. Consider whether you acknowledged that
+    her pain was real, whether you asked permission before raising concerns, and
+    whether you noticed deflection that arrived as helpfulness.
+
+
+    This text is
+    placeholder copy. Scored feedback requires capturing the conversation transcript,
+    which the Realtime session does not yet request.'
+  sceneSequence:
+  - InstructorScene
+  - PatientScene
+  - LearnerScores
